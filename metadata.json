@@ -1,0 +1,10 @@
+{
+  "name": "TakaPay — Next-Gen MFS & Real-Time Savings",
+  "description": "Biometric-secured Mobile Financial Service (MFS) web application inspired by bKash, Nagad, and Rocket with AES-256-GCM encrypted transaction history, real-time DPS savings, QR merchant payments, utility bills, and mobile recharge.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

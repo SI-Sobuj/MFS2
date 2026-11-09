@@ -1,0 +1,363 @@
+{
+  "entities": {
+    "UserWallet": {
+      "title": "UserWallet",
+      "description": "Primary MFS wallet document for an authenticated user, storing real-time balances, savings total, and biometric security preferences.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Account holder display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "11-digit MFS wallet mobile number format",
+          "minLength": 11,
+          "maxLength": 15
+        },
+        "balance": {
+          "type": "number",
+          "description": "Current liquid MFS balance in BDT"
+        },
+        "savingsBalance": {
+          "type": "number",
+          "description": "Total accumulated DPS and vault savings balance in BDT"
+        },
+        "rewardPoints": {
+          "type": "number",
+          "description": "Earned MFS cashback and loyalty points"
+        },
+        "biometricEnabled": {
+          "type": "boolean",
+          "description": "Whether WebAuthn / biometric passkey verification is active"
+        },
+        "pinHash": {
+          "type": "string",
+          "description": "SHA-256 hashed 5-digit MFS PIN",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "kycTier": {
+          "type": "string",
+          "description": "Account verification tier",
+          "enum": ["Verified Tier 1", "Premier MFS"],
+          "maxLength": 32
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of wallet creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last wallet mutation"
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "accountNumber",
+        "balance",
+        "savingsBalance",
+        "rewardPoints",
+        "biometricEnabled",
+        "pinHash",
+        "kycTier",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "EncryptedTransaction": {
+      "title": "EncryptedTransaction",
+      "description": "Immutable MFS transaction record with AES-256-GCM encrypted counterparty/memo payload.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "txId": {
+          "type": "string",
+          "description": "Unique transaction reference ID",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "type": {
+          "type": "string",
+          "description": "MFS transaction category",
+          "enum": [
+            "send_money",
+            "cash_in",
+            "cash_out",
+            "mobile_recharge",
+            "utility_bill",
+            "qr_payment",
+            "savings_deposit",
+            "savings_withdraw"
+          ],
+          "maxLength": 32
+        },
+        "title": {
+          "type": "string",
+          "description": "Display label for the transaction",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "counterpartyMasked": {
+          "type": "string",
+          "description": "Masked counterparty identifier safe for indexed display",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "amount": {
+          "type": "number",
+          "description": "Transaction principal amount in BDT"
+        },
+        "fee": {
+          "type": "number",
+          "description": "MFS service charge in BDT"
+        },
+        "cashback": {
+          "type": "number",
+          "description": "Instant cashback credited in BDT"
+        },
+        "balanceAfter": {
+          "type": "number",
+          "description": "Wallet balance immediately following transaction"
+        },
+        "encryptedPayload": {
+          "type": "string",
+          "description": "AES-256-GCM Base64 ciphertext containing sensitive details",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "iv": {
+          "type": "string",
+          "description": "Base64 initialization vector for AES-256-GCM decryption",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "cipherAlg": {
+          "type": "string",
+          "description": "Encryption algorithm identifier",
+          "enum": ["AES-256-GCM"],
+          "maxLength": 32
+        },
+        "authMethod": {
+          "type": "string",
+          "description": "Authentication factor used to authorize the transaction",
+          "enum": ["Biometric Passkey", "PIN + Biometric"],
+          "maxLength": 32
+        },
+        "status": {
+          "type": "string",
+          "description": "Terminal transaction status",
+          "enum": ["completed"],
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of transaction execution"
+        }
+      },
+      "required": [
+        "uid",
+        "txId",
+        "type",
+        "title",
+        "counterpartyMasked",
+        "amount",
+        "fee",
+        "cashback",
+        "balanceAfter",
+        "encryptedPayload",
+        "iv",
+        "cipherAlg",
+        "authMethod",
+        "status",
+        "createdAt"
+      ]
+    },
+    "SavingsGoal": {
+      "title": "SavingsGoal",
+      "description": "Real-time DPS or savings goal pod tracked inside the user wallet.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "goalId": {
+          "type": "string",
+          "description": "Savings goal identifier",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Goal name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "schemeType": {
+          "type": "string",
+          "description": "Savings scheme structure",
+          "enum": ["Islamic Mudarabah DPS", "Fixed Term Savings", "Micro Vault"],
+          "maxLength": 40
+        },
+        "targetAmount": {
+          "type": "number",
+          "description": "Target maturity amount in BDT"
+        },
+        "currentAmount": {
+          "type": "number",
+          "description": "Current saved amount in BDT"
+        },
+        "monthlyInstallment": {
+          "type": "number",
+          "description": "Recurring installment amount in BDT"
+        },
+        "profitRate": {
+          "type": "number",
+          "description": "Annualized profit/return rate percentage"
+        },
+        "maturityDate": {
+          "type": "string",
+          "description": "ISO date string for maturity target",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the savings goal",
+          "enum": ["active", "completed"],
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last deposit/withdrawal server timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "goalId",
+        "name",
+        "schemeType",
+        "targetAmount",
+        "currentAmount",
+        "monthlyInstallment",
+        "profitRate",
+        "maturityDate",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "NotificationItem": {
+      "title": "NotificationItem",
+      "description": "Real-time push notification record for user transactions and security alerts.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "notifId": {
+          "type": "string",
+          "description": "Notification document ID",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Notification headline",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "body": {
+          "type": "string",
+          "description": "Notification summary message",
+          "minLength": 1,
+          "maxLength": 280
+        },
+        "category": {
+          "type": "string",
+          "description": "Alert category",
+          "enum": ["transaction", "security", "cashback", "savings"],
+          "maxLength": 24
+        },
+        "read": {
+          "type": "boolean",
+          "description": "Whether the user has dismissed/read the alert"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Read status mutation server timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "notifId",
+        "title",
+        "body",
+        "category",
+        "read",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserWallet" },
+      "description": "Root user wallet document keyed by Firebase Auth UID"
+    },
+    "/users/{userId}/transactions/{txId}": {
+      "schema": { "$ref": "#/entities/EncryptedTransaction" },
+      "description": "Encrypted immutable ledger entries for user transactions"
+    },
+    "/users/{userId}/savingsGoals/{goalId}": {
+      "schema": { "$ref": "#/entities/SavingsGoal" },
+      "description": "User DPS and savings goal pods"
+    },
+    "/users/{userId}/notifications/{notifId}": {
+      "schema": { "$ref": "#/entities/NotificationItem" },
+      "description": "Real-time push notification inbox for the user"
+    }
+  }
+}
